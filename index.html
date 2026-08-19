@@ -1,15 +1,62 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-
-  <meta property="og:title" content="1,000,000원을 보냈어요.">
-  <meta property="og:description" content="송금 받기 전까지 보낸 분은 내역 상세화면에서 취소할 수 있어요.">
-  <meta property="og:image" content="https://blackdw3329.github.io/foolspage/perview.jpg">
-  <meta property="og:url" content="https://blackdw3329.github.io/foolspage/">
-  <meta property="og:type" content="website">
-
-  <meta http-equiv="refresh" content="2; url=https://sites.google.com/view/snuaprilfoolsday/%ED%99%88">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>I Love You Heart</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body></body>
+<body>
+  <main class="scene">
+    <div id="heart" class="heart" aria-label="I love you heart animation"></div>
+  </main>
+
+  <script>
+    const heart = document.getElementById("heart");
+
+    // 하트 곡선:
+    // x = 16 sin^3(t)
+    // y = 13 cos(t) - 5 cos(2t) - 2 cos(3t) - cos(4t)
+    const COUNT = 150;
+
+    for (let i = 0; i < COUNT; i++) {
+      const t = (Math.PI * 2 * i) / COUNT;
+
+      const x = 16 * Math.pow(Math.sin(t), 3);
+      const y =
+        13 * Math.cos(t) -
+        5 * Math.cos(2 * t) -
+        2 * Math.cos(3 * t) -
+        Math.cos(4 * t);
+
+      const word = document.createElement("span");
+      word.className = "love";
+      word.textContent = "I love you";
+
+      // 좌표를 화면용 % 좌표로 변환
+      const left = 50 + x * 2.45;
+      const top = 48 - y * 2.55;
+
+      word.style.left = `${left}%`;
+      word.style.top = `${top}%`;
+
+      // 곡선을 따라 글자가 살짝 회전하도록 다음 점으로 접선 방향 추정
+      const dt = 0.01;
+      const t2 = t + dt;
+      const x2 = 16 * Math.pow(Math.sin(t2), 3);
+      const y2 =
+        13 * Math.cos(t2) -
+        5 * Math.cos(2 * t2) -
+        2 * Math.cos(3 * t2) -
+        Math.cos(4 * t2);
+
+      const angle = Math.atan2(-(y2 - y), x2 - x) * 180 / Math.PI;
+      word.style.setProperty("--angle", `${angle}deg`);
+      word.style.setProperty("--delay", `${-i * 45}ms`);
+
+      heart.appendChild(word);
+    }
+  </script>
+</body>
 </html>
+
