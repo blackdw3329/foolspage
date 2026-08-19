@@ -12,51 +12,125 @@
   </main>
 
   <script>
-    const heart = document.getElementById("heart");
+  const heart = document.getElementById("heart");
 
-    // 하트 곡선:
-    // x = 16 sin^3(t)
-    // y = 13 cos(t) - 5 cos(2t) - 2 cos(3t) - cos(4t)
-    const COUNT = 150;
+  const TRACKS = [
+    { scale: 1.00, offset:  0.0, speed: 0.20, opacity: 1.00, blur: 0.0 },
+    { scale: 0.97, offset: -1.8, speed: 0.19, opacity: 0.72, blur: 0.2 },
+    { scale: 1.03, offset:  1.8, speed: 0.21, opacity: 0.62, blur: 0.4 },
+    { scale: 0.94, offset: -3.4, speed: 0.18, opacity: 0.42, blur: 0.7 },
+    { scale: 1.06, offset:  3.4, speed: 0.22, opacity: 0.34, blur: 0.9 },
+  ];
 
-    for (let i = 0; i < COUNT; i++) {
-      const t = (Math.PI * 2 * i) / COUNT;
+  const WORDS_PER_TRACK = 92;
+  const items = [];
 
-      const x = 16 * Math.pow(Math.sin(t), 3);
-      const y =
-        13 * Math.cos(t) -
-        5 * Math.cos(2 * t) -
-        2 * Math.cos(3 * t) -
-        Math.cos(4 * t);
+  function heartPoint(t) {
+    const x = 16 * Math.pow(Math.sin(t), 3);
 
-      const word = document.createElement("span");
-      word.className = "love";
-      word.textContent = "I love you";
+    const y =
+      13 * Math.cos(t)
+      - 5 * Math.cos(2 * t)
+      - 2 * Math.cos(3 * t)
+      - Math.cos(4 * t);
 
-      // 좌표를 화면용 % 좌표로 변환
-      const left = 50 + x * 2.45;
-      const top = 48 - y * 2.55;
+    return { x, y };
+  }
 
-      word.style.left = `${left}%`;
-      word.style.top = `${top}%`;
+  TRACKS.forEach((track, trackIndex) => {
+    for (let i = 0; i < WORDS_PER_TRACK; i++) {
+      const el = document.createElement("span");
 
-      // 곡선을 따라 글자가 살짝 회전하도록 다음 점으로 접선 방향 추정
-      const dt = 0.01;
-      const t2 = t + dt;
-      const x2 = 16 * Math.pow(Math.sin(t2), 3);
-      const y2 =
-        13 * Math.cos(t2) -
-        5 * Math.cos(2 * t2) -
-        2 * Math.cos(3 * t2) -
-        Math.cos(4 * t2);
+      el.className = "love";
+      el.textContent = "I love you";
 
-      const angle = Math.atan2(-(y2 - y), x2 - x) * 180 / Math.PI;
-      word.style.setProperty("--angle", `${angle}deg`);
-      word.style.setProperty("--delay", `${-i * 45}ms`);
+      el.style.opacity = track.opacity;
+      el.style.filter = `blur(${track.blur}px)`;
+      el.style.zIndex = String(10 - trackIndex);
 
-      heart.appendChild(word);
+      heart.appendChild(el);
+
+      items.push({
+        el,
+        track,
+        phase: (i / WORDS_PER_TRACK) * Math.PI * 2,
+        trailPhase: trackIndex * 0.035
+      });
     }
-  </script>
+  });
+
+  let start = performance.now();
+
+  function animate(now) {
+    const elapsed = (now - start) / 1000;
+
+    items.forEach((item, index) => {
+      const { el, track, phase, trailPhase } = item;
+
+      // 시간에 따라 하트 둘레를 계속 이동
+      const t =
+        phase +
+        elapsed * track.speed +
+        trailPhase;
+
+      const p = heartPoint(t);
+      const p2 = heartPoint(t + 0.015);
+
+      // 글자를 하트 곡선 방향에 맞춰 회전
+      const angle = Math.atan2(
+        -(p2.y - p.y),
+        p2.x - p.x
+      ) * 180 / Math.PI;
+
+      // 각 레이어의 크기를 조금 다르게 해서 여러 겹 생성
+      const x = p.x * track.scale;
+      const y = p.y * track.scale;
+
+      const left =
+        50 +
+        x * 2.48 +
+        track.offset;
+
+      const top =
+        49 -
+        y * 2.62;
+
+      // 글자가 흐르면서 밝기가 변하는 효과
+      const pulse =
+        0.72 +
+        0.28 *
+        Math.sin(
+          elapsed * 2.6 +
+          phase * 2.2 +
+          index * 0.015
+        );
+
+      const brightness =
+        0.9 +
+        0.35 * pulse;
+
+      const scalePulse =
+        0.96 +
+        0.08 * pulse;
+
+      el.style.left = `${left}%`;
+      el.style.top = `${top}%`;
+
+      el.style.transform =
+        `translate(-50%, -50%)
+         rotate(${angle}deg)
+         scale(${scalePulse})`;
+
+      el.style.filter =
+        `blur(${track.blur}px)
+         brightness(${brightness})`;
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+</script>
 </body>
 </html>
 
