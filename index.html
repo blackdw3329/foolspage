@@ -41,9 +41,6 @@
             #000;
     }
 
-    /*
-        하트 전체 영역
-    */
     #heart {
         position: relative;
 
@@ -55,22 +52,11 @@
         animation: breathe 4s ease-in-out infinite;
     }
 
-
-    /*
-        I love you 한 "가로 행"
-
-        예:
-        I love you I love you I love you I love you
-    */
     .love-row {
         position: absolute;
 
         left: 50%;
         top: 50%;
-
-        display: flex;
-
-        gap: 12px;
 
         white-space: nowrap;
 
@@ -86,19 +72,15 @@
             filter;
     }
 
-
-    /*
-        한 행 안의 각각의 I love you
-    */
     .love-word {
         display: inline-block;
 
         color: #ec91be;
 
         font-size: clamp(
-            11px,
-            1.65vw,
-            19px
+            14px,
+            2vw,
+            24px
         );
 
         font-weight: 500;
@@ -108,26 +90,13 @@
         white-space: nowrap;
 
         text-shadow:
-
-            0 0 2px
-            rgba(255,255,255,0.9),
-
-            0 0 5px
-            rgba(255,180,220,0.9),
-
-            0 0 10px
-            rgba(255,90,180,0.8),
-
-            0 0 20px
-            rgba(255,50,150,0.45);
+            0 0 2px rgba(255,255,255,0.9),
+            0 0 5px rgba(255,180,220,0.9),
+            0 0 10px rgba(255,90,180,0.8),
+            0 0 20px rgba(255,50,150,0.45);
     }
 
-
-    /*
-        전체 하트가 아주 조금 커졌다 작아졌다
-    */
     @keyframes breathe {
-
         0%,
         100% {
             transform: scale(0.98);
@@ -138,111 +107,64 @@
         }
     }
 
-
     @media (max-width: 600px) {
-
         #heart {
             width: 98vw;
             height: 98vw;
         }
 
-        .love-row {
-            gap: 7px;
-        }
-
         .love-word {
             font-size: clamp(
-                8px,
-                2.5vw,
-                12px
+                12px,
+                4vw,
+                18px
             );
         }
     }
-
 </style>
 </head>
-
 
 <body>
 
 <div class="scene">
-
     <div id="heart"></div>
-
 </div>
 
 
 <script>
 
-const heart = document.getElementById("heart");
+const heart =
+    document.getElementById("heart");
 
 
 /*
-==============================================
+========================================
 
-    설정값
+설정
 
-==============================================
+========================================
 */
 
 
-/*
-가로 행 개수
-
-높이면 더 촘촘해짐.
-*/
-const ROW_COUNT = 90;
+// 하트 회전 속도
+const ROTATION_SPEED = 0.35;
 
 
-/*
-한 가로줄 안에
-
-I love you
-
-몇 개를 넣을지
-*/
-const WORDS_PER_ROW = 1;
-
-
-/*
-하트 회전 속도
-
-0.10 = 느림
-0.20 = 적당
-0.35 = 빠름
-*/
-const ROTATION_SPEED = 0.18;
-
-
-/*
-하트 폭
-
-숫자를 높이면 하트가 좌우로 커짐.
-*/
+// 하트 가로 크기
 const HEART_WIDTH = 2.35;
 
 
-/*
-하트 높이
-*/
+// 하트 세로 크기
 const HEART_HEIGHT = 2.45;
 
 
 /*
-각 가로줄 최대 폭을 조절하기 위한 값
+========================================
+
+하트 좌표
+
+========================================
 */
-const ROW_WIDTH_SCALE = 1.0;
-
-
-
-/*
-==============================================
-
-    하트 수학식
-
-==============================================
-*/
-
 
 function getHeartPoint(t) {
 
@@ -255,13 +177,9 @@ function getHeartPoint(t) {
 
 
     const y =
-
         13 * Math.cos(t)
-
         - 5 * Math.cos(2 * t)
-
         - 2 * Math.cos(3 * t)
-
         - Math.cos(4 * t);
 
 
@@ -272,101 +190,46 @@ function getHeartPoint(t) {
 }
 
 
-
 /*
-==============================================
+========================================
 
-    가로줄 생성
+I love you 딱 1개 생성
 
-==============================================
+========================================
 */
 
-
-const rows = [];
-
-
-for (
-    let i = 0;
-    i < ROW_COUNT;
-    i++
-) {
-
-    const row =
-        document.createElement("div");
+const row =
+    document.createElement("div");
 
 
-    row.className =
-        "love-row";
+row.className =
+    "love-row";
 
 
-    /*
-    한 행 안에
-
-    I love you
-
-    여러 개 생성
-    */
-
-    for (
-        let j = 0;
-        j < WORDS_PER_ROW;
-        j++
-    ) {
-
-        const word =
-            document.createElement("span");
+const word =
+    document.createElement("span");
 
 
-        word.className =
-            "love-word";
+word.className =
+    "love-word";
 
 
-        word.textContent =
-            "I love you";
+word.textContent =
+    "I love you";
 
 
-        row.appendChild(word);
+row.appendChild(word);
 
-    }
-
-
-    heart.appendChild(row);
-
-
-    /*
-    각 행의 시작 위치를 서로 다르게 설정
-
-    그래서 하트 전체에 골고루 퍼짐.
-    */
-
-    rows.push({
-
-        element: row,
-
-        phase:
-            (
-                i /
-                ROW_COUNT
-            )
-            *
-            Math.PI
-            *
-            2
-
-    });
-
-}
-
+heart.appendChild(row);
 
 
 /*
-==============================================
+========================================
 
-    애니메이션
+애니메이션
 
-==============================================
+========================================
 */
-
 
 let previousTime =
     performance.now();
@@ -375,12 +238,10 @@ let previousTime =
 let rotation = 0;
 
 
-
 function animate(currentTime) {
 
-
     /*
-    FPS와 상관없이 같은 속도로 움직이기 위한 deltaTime
+    FPS에 관계없이 일정한 속도로 이동
     */
 
     const deltaTime =
@@ -396,345 +257,208 @@ function animate(currentTime) {
         currentTime;
 
 
-
     /*
-    모든 행이 하트 경로를 따라 이동
+    하트 경로를 따라 계속 이동
     */
 
     rotation +=
-        ROTATION_SPEED
-        *
+        ROTATION_SPEED *
         deltaTime;
 
 
+    /*
+    현재 하트 위치
+    */
 
-    rows.forEach(
+    const t =
+        rotation;
+
+
+    const p =
+        getHeartPoint(t);
+
+
+    /*
+    아주 조금 앞의 위치
+
+    글자의 방향 계산용
+    */
+
+    const next =
+        getHeartPoint(
+            t + 0.015
+        );
+
+
+    /*
+    화면 좌표
+    */
+
+    const left =
+        50 +
+        p.x *
+        HEART_WIDTH;
+
+
+    const top =
+        50 -
+        p.y *
+        HEART_HEIGHT;
+
+
+    /*
+    현재 하트 곡선의 진행 방향
+    */
+
+    const dx =
+        next.x -
+        p.x;
+
+
+    const dy =
+        next.y -
+        p.y;
+
+
+    let angle =
+        Math.atan2(
+            -dy,
+            dx
+        )
+        *
+        180 /
+        Math.PI;
+
+
+    /*
+    글자가 거꾸로 뒤집히지 않게 처리
+    */
+
+    while (angle > 90) {
+
+        angle -= 180;
+
+    }
+
+
+    while (angle < -90) {
+
+        angle += 180;
+
+    }
+
+
+    /*
+    1.0 = 하트 방향 그대로 회전
+    0.0 = 항상 수평
+
+    살짝만 회전
+    */
+
+    angle *= 0.55;
+
+
+    /*
+    ========================================
+
+    원근감
+
+    ========================================
+    */
+
+    const depth =
         (
-            row,
-            index
-        ) => {
+            Math.sin(
+                t +
+                Math.PI / 4
+            )
+            +
+            1
+        )
+        /
+        2;
 
 
-            /*
-            현재 이 가로줄이
-            하트의 어느 위치에 있는지
-            */
+    /*
+    앞쪽에서는 조금 크게
+    */
 
-            const t =
-                row.phase
-                +
-                rotation;
+    const scale =
+        0.72 +
+        depth *
+        0.55;
 
 
+    /*
+    뒤쪽에서는 조금 흐리게
+    */
 
-            /*
-            현재 위치
-            */
+    const opacity =
+        0.35 +
+        depth *
+        0.65;
 
-            const p =
-                getHeartPoint(t);
 
+    /*
+    뒤쪽 blur
+    */
 
+    const blur =
+        (
+            1 -
+            depth
+        )
+        *
+        1.5;
 
-            /*
-            아주 조금 앞의 위치
 
-            방향 계산용
-            */
+    /*
+    위치 적용
+    */
 
-            const next =
-                getHeartPoint(
-                    t + 0.015
-                );
+    row.style.left =
+        left + "%";
 
 
+    row.style.top =
+        top + "%";
 
-            /*
-            ==========================================
 
-                화면 좌표 계산
+    /*
+    회전 + 크기
+    */
 
-            ==========================================
-            */
+    row.style.transform =
+        `
+        translate(-50%, -50%)
+        rotate(${angle}deg)
+        scale(${scale})
+        `;
 
 
-            const left =
-                50
-                +
-                p.x
-                *
-                HEART_WIDTH;
+    /*
+    투명도
+    */
 
+    row.style.opacity =
+        opacity;
 
-            const top =
-                50
-                -
-                p.y
-                *
-                HEART_HEIGHT;
 
+    /*
+    흐림 + 밝기
+    */
 
-
-            /*
-            ==========================================
-
-                하트 진행 방향 계산
-
-            ==========================================
-            */
-
-
-            const dx =
-                next.x -
-                p.x;
-
-
-            const dy =
-                next.y -
-                p.y;
-
-
-
-            const tangentAngle =
-
-                Math.atan2(
-                    -dy,
-                    dx
-                )
-
-                *
-
-                180 /
-                Math.PI;
-
-
-
-            /*
-            사진처럼 글자가 완전히 세로로 뒤집히지 않도록
-            회전각을 제한한다.
-
-            즉 "행 자체는 가로 느낌"을 유지하면서
-            하트 곡선 방향만 따라간다.
-            */
-
-
-            let angle =
-                tangentAngle;
-
-
-            while (
-                angle > 90
-            ) {
-
-                angle -= 180;
-
-            }
-
-
-            while (
-                angle < -90
-            ) {
-
-                angle += 180;
-
-            }
-
-
-
-            /*
-            회전을 조금 약하게 적용.
-
-            1.0이면 하트 접선 방향 그대로
-            0이면 모든 글자가 완전히 수평
-            */
-
-            angle *= 0.55;
-
-
-
-            /*
-            ==========================================
-
-                깊이 / 원근 효과
-
-            ==========================================
-
-            사진처럼
-
-            앞쪽 글자 = 크고 밝음
-            뒤쪽 글자 = 작고 흐림
-
-            효과를 줌.
-            */
-
-
-            const depth =
-                (
-                    Math.sin(
-                        t + Math.PI / 4
-                    )
-                    +
-                    1
-                )
-                /
-                2;
-
-
-
-            /*
-            크기
-            */
-
-            const scale =
-
-                0.72
-
-                +
-
-                depth
-                *
-                0.55;
-
-
-
-            /*
-            투명도
-            */
-
-            const opacity =
-
-                0.28
-
-                +
-
-                depth
-                *
-                0.72;
-
-
-
-            /*
-            blur
-            */
-
-            const blur =
-
-                (
-                    1 -
-                    depth
-                )
-
-                *
-                1.5;
-
-
-
-            /*
-            ==========================================
-
-                가로줄 길이 변화
-
-            ==========================================
-
-            사진처럼 앞부분에서는
-            글자 행이 더 길게 보이게 한다.
-            */
-
-
-            const widthScale =
-
-                0.75
-
-                +
-
-                depth
-                *
-                0.45;
-
-
-
-            /*
-            최종 위치
-            */
-
-            row.element.style.left =
-                left + "%";
-
-
-            row.element.style.top =
-                top + "%";
-
-
-
-            /*
-            translate(-50%, -50%)
-
-            = 좌표의 중심에 행 중심 배치
-
-
-            rotate()
-
-            = 하트 곡선 방향
-
-
-            scale()
-
-            = 원근감
-
-
-            scaleX()
-
-            = 행 길이 변화
-            */
-
-            row.element.style.transform =
-
-                `translate(-50%, -50%)
-
-                 rotate(${angle}deg)
-
-                 scale(${scale})
-
-                 scaleX(${widthScale * ROW_WIDTH_SCALE})`;
-
-
-
-            row.element.style.opacity =
-                opacity;
-
-
-
-            row.element.style.filter =
-
-                `blur(${blur}px)
-
-                 brightness(${
-                    0.8 +
-                    depth * 0.65
-                 })`;
-
-
-
-            /*
-            앞쪽 행을 위에 렌더링
-            */
-
-            row.element.style.zIndex =
-
-                Math.floor(
-                    depth * 100
-                );
-
-        }
-    );
+    row.style.filter =
+        `
+        blur(${blur}px)
+        brightness(${0.9 + depth * 0.6})
+        `;
 
 
     requestAnimationFrame(
         animate
     );
-
 }
-
 
 
 requestAnimationFrame(
